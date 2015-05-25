@@ -1,6 +1,7 @@
 package tellerum.common.medusa
 
-import com.tinkerpop.blueprints.impls.orient.OrientGraphFactory
+import com.orientechnologies.orient.core.sql.OCommandSQL
+import com.tinkerpop.blueprints.impls.orient.{ OrientDynaElementIterable, OrientGraphFactory }
 import scala.collection.Map
 import scala.collection.JavaConversions._
 import com.typesafe.config.ConfigFactory
@@ -14,6 +15,8 @@ trait BaseVAO {
 
   val clazz: String
 
+  def theClass = s"class:$clazz"
+
   /**
    * Adds vertices given any {scala.collection.Map} instance
    * @param fmap
@@ -21,7 +24,7 @@ trait BaseVAO {
   def addVertexTx(fmap: Map[String, Any]) {
     val transaction = factory.getTx
 
-    transaction.addVertex(clazz,
+    transaction.addVertex(theClass,
       mapAsJavaMap(fmap.filter(x => x._2.!=(None)))
     )
 
@@ -41,6 +44,24 @@ trait BaseVAO {
 
     addVertexTx(fmap)
 
+  }
+
+  def execFlatQuery(q: String, qparams: List[String]) = {
+    val noTx = factory.getTx
+
+    val sx: OrientDynaElementIterable = noTx.command(new OCommandSQL(q))
+                                            .execute(qparams: _*)
+
+    asScalaIterator(sx.iterator).toList
+  }
+
+  def execFlatQuery(q: String, qparams: Map[String, String]) = {
+    val noTx = factory.getTx
+
+    val sx: OrientDynaElementIterable = noTx.command(new OCommandSQL(q))
+      .execute(mapAsJavaMap(qparams))
+
+    asScalaIterator(sx.iterator).toList
   }
 }
 
