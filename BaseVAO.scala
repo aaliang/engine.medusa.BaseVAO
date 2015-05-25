@@ -56,7 +56,7 @@ trait BaseVAO {
   }
 
   def execFlatQuery(q: String, qparams: Map[String, String]) = {
-    val noTx = factory.getTx
+    val noTx = factory.getNoTx
 
     val sx: OrientDynaElementIterable = noTx.command(new OCommandSQL(q))
       .execute(mapAsJavaMap(qparams))
