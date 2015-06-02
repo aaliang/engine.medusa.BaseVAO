@@ -1,4 +1,4 @@
-package tellerum.common.medusa
+package engine.medusa.BaseVAO
 
 import com.orientechnologies.orient.core.sql.OCommandSQL
 import com.tinkerpop.blueprints.Features
@@ -117,3 +117,4 @@ object BaseVAO {
     conf.getString("orientdb.iUri"),
     conf.getString("orientdb.userName"),
     conf.getString("orientdb.password")).setupPool(1, 10)
+}
